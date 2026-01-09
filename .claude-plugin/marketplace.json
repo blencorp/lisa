@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "lisa",
-      "source": ".",
+      "source": "./",
       "description": "Interactive specification interview workflow that conducts in-depth feature interviews using AskUserQuestion and generates comprehensive specs. Lisa plans. Ralph does.",
       "version": "1.0.0",
       "author": {
