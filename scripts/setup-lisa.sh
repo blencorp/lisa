@@ -137,6 +137,12 @@ Base your next question on previous answers. If the user mentions something inte
 
 ## QUESTION CATEGORIES TO COVER
 
+**Scope Definition:**
+- What is explicitly OUT of scope for this implementation?
+- What's the MVP vs. full vision? Where do we draw the line?
+- Are there related features we should NOT touch?
+- What should Ralph ignore even if it seems relevant?
+
 **Technical Implementation:**
 - Data models and storage (tables, fields, relationships)
 - API design (endpoints, methods, payloads, auth)
@@ -154,13 +160,18 @@ Base your next question on previous answers. If the user mentions something inte
 - Security considerations
 - Scalability expectations
 - Technical debt concerns
-- MVP scope vs. full vision
 
-**Verification & Definition of Done:**
+**Implementation Phases:**
+- Can this be broken into 2-4 incremental phases?
+- What's the logical order of implementation? (foundation first, then core, then polish)
+- What can be verified after each phase?
+- What's the minimum viable first phase?
+
+**Verification & Feedback Loops:**
 - What commands verify the feature works? (test suite, typecheck, build, lint)
+- What specific output indicates success vs failure?
+- What should Ralph check after each iteration?
 - What are the acceptance criteria for each user story? (specific, testable conditions)
-- How will we know this feature is "done"? (observable outcomes)
-- What should fail if this feature breaks? (regression tests)
 
 ## YOUR WORKFLOW
 
@@ -235,6 +246,16 @@ cat > "$DRAFT_PATH" << DRAFT_EOF
 ## Problem Statement
 [To be filled during interview]
 
+## Scope
+
+### In Scope
+<!-- Explicit list of what IS included in this implementation -->
+- [To be filled during interview]
+
+### Out of Scope
+<!-- Explicit list of what is NOT included - future work, won't fix, etc. -->
+- [To be filled during interview]
+
 ## User Stories
 
 <!-- Format each story with acceptance criteria:
@@ -279,24 +300,59 @@ cat > "$DRAFT_PATH" << DRAFT_EOF
 ### Non-Functional Requirements
 [To be filled during interview]
 
+## Implementation Phases
+
+<!-- Break work into 2-4 incremental milestones Ralph can complete one at a time -->
+
+### Phase 1: [Foundation/Setup]
+- [ ] [Task 1]
+- [ ] [Task 2]
+- **Verification:** \`[command to verify phase 1]\`
+
+### Phase 2: [Core Implementation]
+- [ ] [Task 1]
+- [ ] [Task 2]
+- **Verification:** \`[command to verify phase 2]\`
+
+### Phase 3: [Integration/Polish]
+- [ ] [Task 1]
+- [ ] [Task 2]
+- **Verification:** \`[command to verify phase 3]\`
+
+<!-- Add Phase 4 if needed for complex features -->
+
 ## Definition of Done
 
 This feature is complete when:
 - [ ] All acceptance criteria in user stories pass
+- [ ] All implementation phases verified
 - [ ] Tests pass: \`[verification command]\`
 - [ ] Types/lint check: \`[verification command]\`
-- [ ] [Other verification steps gathered during interview]
+- [ ] Build succeeds: \`[verification command]\`
 
 ## Ralph Loop Command
 
-<!-- Generated at finalization based on gathered requirements -->
+<!-- Generated at finalization with phases and escape hatch -->
 
 \`\`\`bash
 /ralph-loop "Implement $FEATURE_NAME per spec at $SPEC_PATH
 
-[Verification steps will be filled in at finalization]
+PHASES:
+1. [Phase 1 name]: [tasks] - verify with [command]
+2. [Phase 2 name]: [tasks] - verify with [command]
+3. [Phase 3 name]: [tasks] - verify with [command]
 
-Output <promise>COMPLETE</promise> when finished." --max-iterations 30 --completion-promise "COMPLETE"
+VERIFICATION (run after each phase):
+- [test command]
+- [lint/typecheck command]
+- [build command]
+
+ESCAPE HATCH: After 20 iterations without progress:
+- Document what's blocking in the spec file under 'Implementation Notes'
+- List approaches attempted
+- Stop and ask for human guidance
+
+Output <promise>COMPLETE</promise> when all phases pass verification." --max-iterations 30 --completion-promise "COMPLETE"
 \`\`\`
 
 ## Open Questions

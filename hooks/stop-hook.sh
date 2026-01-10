@@ -106,12 +106,16 @@ if [[ -n "$USER_MESSAGES" ]]; then
 FINALIZATION INSTRUCTIONS:
 1. Read the draft spec file at '$DRAFT_PATH' to see all accumulated information
 2. Write the final, polished specification to '$SPEC_PATH' with:
+   - A 'Scope' section with explicit 'In Scope' and 'Out of Scope' subsections
    - Each user story formatted with testable acceptance criteria (checkbox format: - [ ])
+   - An 'Implementation Phases' section with 2-4 incremental phases, each with tasks and verification command
    - A 'Definition of Done' section with specific verification commands
    - A 'Ralph Loop Command' section with a ready-to-use /ralph-loop command
-3. The Ralph command should:
+3. The Ralph Loop command MUST include:
    - Reference the spec path: $SPEC_PATH
-   - Include the verification commands from Definition of Done
+   - PHASES section listing each phase with tasks and verification command
+   - VERIFICATION section with test/lint/build commands to run after each phase
+   - ESCAPE HATCH section: 'After 20 iterations without progress: Document what's blocking in the spec file under Implementation Notes, list approaches attempted, stop and ask for human guidance'
    - Use --max-iterations 30 --completion-promise \"COMPLETE\"
 4. After writing the final spec, output: <promise>SPEC COMPLETE</promise>
 
