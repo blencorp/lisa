@@ -10,6 +10,7 @@ FEATURE_NAME=""
 CONTEXT_FILE=""
 OUTPUT_DIR="docs/specs"
 MAX_QUESTIONS=0  # Unlimited by default
+FIRST_PRINCIPLES=false
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -29,6 +30,7 @@ OPTIONS:
   --context <file>      Initial context file (PRD, requirements, etc.)
   --output-dir <dir>    Output directory for specs (default: docs/specs)
   --max-questions <n>   Maximum question rounds (default: unlimited)
+  --first-principles    Challenge assumptions before detailed spec gathering
   -h, --help            Show this help
 
 DESCRIPTION:
@@ -38,10 +40,14 @@ DESCRIPTION:
 
   The interview continues until you say "done" or "finalize".
 
+  Use --first-principles to have Lisa challenge your assumptions first,
+  helping you arrive at a better solution before diving into details.
+
 EXAMPLES:
   /lisa:plan "user authentication"
   /lisa:plan "payment processing" --context docs/PRD.md
   /lisa:plan "search feature" --output-dir specs/features
+  /lisa:plan "new dashboard" --first-principles
 
 OUTPUT:
   Final spec saved to: {output-dir}/{feature-slug}.md
@@ -66,6 +72,10 @@ HELP_EOF
     --max-questions)
       MAX_QUESTIONS="$2"
       shift 2
+      ;;
+    --first-principles)
+      FIRST_PRINCIPLES=true
+      shift
       ;;
     *)
       if [[ -z "$FEATURE_NAME" ]]; then
@@ -183,6 +193,57 @@ Base your next question on previous answers. If the user mentions something inte
 6. When user signals completion, write final spec and output <promise>SPEC COMPLETE</promise>
 STATIC_PROMPT_EOF
 
+# Add first-principles section if flag is set
+if [[ "$FIRST_PRINCIPLES" == "true" ]]; then
+  # Create temp file with first-principles content
+  FP_TEMP=$(mktemp)
+  cat > "$FP_TEMP" << 'FP_EOF'
+# Lisa Plan Interview Session
+
+## FIRST PRINCIPLES MODE ACTIVE
+
+You are in first-principles mode. Before gathering detailed spec information, you must challenge and validate the user's approach. This helps ensure we're building the right thing, not just building the thing right.
+
+### PHASE 1: CHALLENGE THE APPROACH (3-5 questions)
+
+Start by asking questions that challenge assumptions. Use AskUserQuestion for each:
+
+1. "What specific problem have you observed that led to this idea?"
+2. "What happens if we don't build this at all? What's the cost of inaction?"
+3. "What's the absolute simplest thing that might solve this problem?"
+4. "What would have to be true for this to be the wrong approach?"
+5. "Is there an existing solution (internal, external, or off-the-shelf) we could use instead?"
+
+**IMPORTANT:**
+- DO NOT ask implementation questions yet (no API design, no data models, no UX details)
+- Focus entirely on validating that this is the RIGHT thing to build
+- Listen for signals that the user hasn't fully thought through the problem
+- If the user's answers reveal a better approach, help them discover it
+
+### PHASE 2: TRANSITION TO SPEC GATHERING
+
+After 3-5 challenge questions, evaluate the approach:
+
+**If the approach seems valid:**
+Tell the user: "The approach seems sound. Let's move to detailed specification."
+Then proceed with the standard spec questions (Technical, UX, Scope, Phases, Verification).
+
+**If the approach seems flawed or unclear:**
+Help the user discover a better alternative. Ask follow-up questions like:
+- "Based on what you've said, would [alternative] actually solve the core problem better?"
+- "It sounds like the real issue is [X]. Should we focus on that instead?"
+
+Only proceed to detailed spec gathering once you're confident the approach is valid.
+
+---
+
+FP_EOF
+
+  # Read the rest of the standard prompt (everything after the first header line)
+  tail -n +3 "$PROMPT_FILE" >> "$FP_TEMP"
+  mv "$FP_TEMP" "$PROMPT_FILE"
+fi
+
 # Add context to the prompt if provided
 if [[ -n "$CONTEXT_CONTENT" ]]; then
   cat >> "$PROMPT_FILE" << CONTEXT_EOF
@@ -229,6 +290,7 @@ output_dir: "$OUTPUT_DIR"
 spec_path: "$SPEC_PATH"
 draft_path: "$DRAFT_PATH"
 context_file: "$CONTEXT_FILE"
+first_principles: $FIRST_PRINCIPLES
 ---
 
 $INTERVIEW_PROMPT
@@ -380,6 +442,9 @@ if [[ $MAX_QUESTIONS -gt 0 ]]; then
   echo "Max Questions: $MAX_QUESTIONS"
 else
   echo "Max Questions: unlimited"
+fi
+if [[ "$FIRST_PRINCIPLES" == "true" ]]; then
+  echo "Mode: First Principles (will challenge assumptions first)"
 fi
 echo ""
 echo "The interview will continue until you say \"done\" or \"finalize\"."
