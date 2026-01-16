@@ -6,6 +6,17 @@
 
 set -euo pipefail
 
+# JSON string escaper for output generation (native bash, no jq dependency)
+json_escape() {
+  local s="$1"
+  s="${s//\\/\\\\}"      # backslash (must be first)
+  s="${s//\"/\\\"}"      # double quote
+  s="${s//$'\n'/\\n}"    # newline
+  s="${s//$'\r'/\\r}"    # carriage return
+  s="${s//$'\t'/\\t}"    # tab
+  printf '%s' "$s"
+}
+
 # Read hook input from stdin
 HOOK_INPUT=$(cat)
 
@@ -41,8 +52,8 @@ if [[ "$MAX_ITERATIONS" =~ ^[0-9]+$ ]] && [[ $MAX_ITERATIONS -gt 0 ]] && [[ $ITE
   exit 0
 fi
 
-# Get transcript path from hook input
-TRANSCRIPT_PATH=$(echo "$HOOK_INPUT" | jq -r '.transcript_path')
+# Get transcript path from hook input (native bash, no jq)
+TRANSCRIPT_PATH=$(echo "$HOOK_INPUT" | sed -n 's/.*"transcript_path" *: *"\([^"]*\)".*/\1/p')
 
 if [[ ! -f "$TRANSCRIPT_PATH" ]]; then
   echo "Warning: Lisa transcript not found" >&2
@@ -57,19 +68,11 @@ if ! grep -q '"role":"assistant"' "$TRANSCRIPT_PATH"; then
   exit 0
 fi
 
-# Extract last assistant message
+# Extract last assistant message and check for completion promise
+# No need to parse JSON - just check if the raw line contains the promise tag
 LAST_LINE=$(grep '"role":"assistant"' "$TRANSCRIPT_PATH" | tail -1)
-LAST_OUTPUT=$(echo "$LAST_LINE" | jq -r '
-  .message.content |
-  map(select(.type == "text")) |
-  map(.text) |
-  join("\n")
-' 2>/dev/null || echo "")
 
-# Check for completion promise (<promise>SPEC COMPLETE</promise>)
-PROMISE_TEXT=$(echo "$LAST_OUTPUT" | perl -0777 -pe 's/.*?<promise>(.*?)<\/promise>.*/$1/s; s/^\s+|\s+$//g; s/\s+/ /g' 2>/dev/null || echo "")
-
-if [[ -n "$PROMISE_TEXT" ]] && [[ "$PROMISE_TEXT" = "SPEC COMPLETE" ]]; then
+if echo "$LAST_LINE" | grep -q '<promise>SPEC COMPLETE</promise>'; then
   echo "Lisa interview complete!"
   echo "   Final spec saved to: $SPEC_PATH"
   rm "$STATE_FILE"
@@ -77,22 +80,11 @@ if [[ -n "$PROMISE_TEXT" ]] && [[ "$PROMISE_TEXT" = "SPEC COMPLETE" ]]; then
 fi
 
 # Check if user said "done" or "finalize" in the most recent user message
-# We need to look at user messages in the transcript
+# No need to parse JSON - just grep the raw line for keywords
 USER_MESSAGES=$(grep '"role":"user"' "$TRANSCRIPT_PATH" | tail -1 || echo "")
 if [[ -n "$USER_MESSAGES" ]]; then
-  USER_TEXT=$(echo "$USER_MESSAGES" | jq -r '
-    .message.content |
-    if type == "array" then
-      map(select(.type == "text")) | map(.text) | join("\n")
-    elif type == "string" then
-      .
-    else
-      ""
-    end
-  ' 2>/dev/null || echo "")
-
-  # Check for completion signals (case-insensitive)
-  if echo "$USER_TEXT" | grep -iqE '\b(done|finalize|finished|that.?s all|complete|wrap up)\b'; then
+  # Check for completion signals directly in the raw JSON line (case-insensitive)
+  if echo "$USER_MESSAGES" | grep -iqE '\b(done|finalize|finished|that.?s all|complete|wrap up)\b'; then
     # User wants to finalize - inject finalization prompt
     NEXT_ITERATION=$((ITERATION + 1))
 
@@ -140,14 +132,11 @@ FINALIZATION INSTRUCTIONS:
 
 Do this now - write the final spec and output the completion promise."
 
-    jq -n \
-      --arg prompt "$FINALIZE_PROMPT" \
-      --arg msg "User requested finalization - generating final spec..." \
-      '{
-        "decision": "block",
-        "reason": $prompt,
-        "systemMessage": $msg
-      }'
+    # Output JSON using native bash (no jq)
+    ESCAPED_PROMPT=$(json_escape "$FINALIZE_PROMPT")
+    ESCAPED_MSG=$(json_escape "User requested finalization - generating final spec...")
+    printf '{"decision":"block","reason":"%s","systemMessage":"%s"}\n' \
+      "$ESCAPED_PROMPT" "$ESCAPED_MSG"
     exit 0
   fi
 fi
@@ -172,14 +161,10 @@ fi
 # Build system message with iteration count
 SYSTEM_MSG="Lisa round $NEXT_ITERATION | Continue asking questions until user says 'done' or 'finalize'"
 
-# Output JSON to block the stop and feed prompt back
-jq -n \
-  --arg prompt "$PROMPT_TEXT" \
-  --arg msg "$SYSTEM_MSG" \
-  '{
-    "decision": "block",
-    "reason": $prompt,
-    "systemMessage": $msg
-  }'
+# Output JSON to block the stop and feed prompt back (native bash, no jq)
+ESCAPED_PROMPT=$(json_escape "$PROMPT_TEXT")
+ESCAPED_MSG=$(json_escape "$SYSTEM_MSG")
+printf '{"decision":"block","reason":"%s","systemMessage":"%s"}\n' \
+  "$ESCAPED_PROMPT" "$ESCAPED_MSG"
 
 exit 0
