@@ -106,7 +106,7 @@ mkdir -p .claude
 FEATURE_SLUG=$(echo "$FEATURE_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd '[:alnum:]-')
 SPEC_PATH="$OUTPUT_DIR/$FEATURE_SLUG.md"
 JSON_PATH="$OUTPUT_DIR/$FEATURE_SLUG.json"
-PROGRESS_PATH="$OUTPUT_DIR/progress.txt"
+PROGRESS_PATH="$OUTPUT_DIR/$FEATURE_SLUG-progress.txt"
 DRAFT_PATH=".claude/lisa-draft.md"
 TIMESTAMP=$(date +%Y-%m-%d)
 
