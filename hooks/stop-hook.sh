@@ -139,68 +139,88 @@ if [[ -n "$USER_MESSAGES" ]]; then
     fi
     mv "$TEMP_FILE" "$STATE_FILE"
 
-    FINALIZE_PROMPT="The user has indicated they want to finalize the specification.
+    FINALIZE_PROMPT="CRITICAL: You are writing DOCUMENTATION files only. Do NOT write any source code, implementation files, or execute any commands. Your ONLY task is to create three text files.
 
-FINALIZATION INSTRUCTIONS:
-1. Read the draft spec file at '$DRAFT_PATH' to see all accumulated information
+The user has indicated they want to finalize the specification.
 
-2. Write the final, polished PRD to '$SPEC_PATH' following this EXACT format:
+YOUR TASK: Create exactly 3 documentation files. Nothing else.
 
-   ## User Stories (REQUIRED FORMAT)
-   Each story MUST have:
-   - ID: ### US-1: [Title], ### US-2: [Title], etc.
-   - Description: As a [user], I want [action] so that [benefit].
-   - Acceptance Criteria: VERIFIABLE checklist (not vague)
-     - GOOD: 'API returns 200 for valid input', 'Form shows error for invalid email'
-     - BAD: 'Works correctly', 'Is fast', 'Handles errors'
-   - Each story must be completable in ONE focused coding session
+═══════════════════════════════════════════════════════════════════════════════
+FILE 1: PRD Specification ($SPEC_PATH)
+═══════════════════════════════════════════════════════════════════════════════
 
-   ## Functional Requirements
-   Use FR-IDs: FR-1, FR-2, FR-3, etc.
+Read the draft at '$DRAFT_PATH', then write a polished PRD with these sections:
 
-   ## Non-Functional Requirements
-   Use NFR-IDs: NFR-1, NFR-2, etc.
+## User Stories
+Each story MUST have:
+- ID format: ### US-1: [Title], ### US-2: [Title], etc.
+- Description: As a [user], I want [action] so that [benefit].
+- Acceptance Criteria: VERIFIABLE checklist items
+  - GOOD: 'API returns 200 for valid input', 'Form shows error for invalid email'
+  - BAD: 'Works correctly', 'Is fast', 'Handles errors'
 
-   ## Other Required Sections
-   - Scope (In Scope / Out of Scope)
-   - Implementation Phases with verification commands
-   - Definition of Done
-   - Ralph Loop Command
+## Functional Requirements
+Use IDs: FR-1, FR-2, FR-3, etc.
 
-3. The Ralph Loop command MUST include:
-   - Reference the spec path: $SPEC_PATH
-   - PHASES section listing each phase with tasks and verification command
-   - VERIFICATION section with test/lint/build commands to run after each phase
-   - ESCAPE HATCH section: 'After 20 iterations without progress: Document what's blocking in the spec file under Implementation Notes, list approaches attempted, stop and ask for human guidance'
-   - Use --max-iterations 30 --completion-promise \"COMPLETE\"
+## Non-Functional Requirements
+Use IDs: NFR-1, NFR-2, etc.
 
-4. Generate '$JSON_PATH' as a JSON array where each element follows this EXACT structure (ALL fields are REQUIRED):
-   [
-     {
-       \"category\": \"functional\",
-       \"description\": \"[specific test case description]\",
-       \"steps\": [
-         \"[step 1 to verify]\",
-         \"[step 2 to verify]\",
-         \"[step 3 to verify]\"
-       ],
-       \"passes\": false
-     }
-   ]
+## Scope
+- In Scope: [list]
+- Out of Scope: [list]
 
-   REQUIRED FIELDS (all must be present):
-   - \"category\": One of \"functional\", \"setup\", \"integration\", \"ui\", \"error-handling\"
-   - \"description\": Clear description of what this test case verifies
-   - \"steps\": Array of verification steps (strings)
-   - \"passes\": MUST always be false (Ralph will update during implementation)
+## Implementation Phases
+Document the suggested phases with their verification commands (as text).
 
-   Generate one test case object for each user story or acceptance criterion from the PRD.
+## Definition of Done
+Checklist for when the feature is complete.
 
-5. Create an EMPTY file at '$PROGRESS_PATH' - the file MUST be empty with no content (Ralph will populate it during implementation)
+## Ralph Loop Command
+This section contains the TEXT of a command that a developer would copy-paste later.
+Write it as a markdown code block. Example format:
 
-6. After writing all three files, output: <promise>SPEC COMPLETE</promise>
+\`\`\`
+claude --max-iterations 30 --completion-promise \"COMPLETE\" \"Implement the spec at $SPEC_PATH following the phases defined. After each phase, run verification. If stuck for 20 iterations, document blockers and ask for help.\"
+\`\`\`
 
-Do this now - write the final spec (.md), structured JSON (.json), create the empty progress file (.txt), and output the completion promise."
+═══════════════════════════════════════════════════════════════════════════════
+FILE 2: Test Cases JSON ($JSON_PATH)
+═══════════════════════════════════════════════════════════════════════════════
+
+Generate a JSON array. Each element MUST have ALL these fields:
+[
+  {
+    \"category\": \"functional\",
+    \"description\": \"[what this test verifies]\",
+    \"steps\": [\"step 1\", \"step 2\", \"step 3\"],
+    \"passes\": false
+  }
+]
+
+- \"category\": One of \"functional\", \"setup\", \"integration\", \"ui\", \"error-handling\"
+- \"description\": Clear description of what this test case verifies
+- \"steps\": Array of verification steps (strings)
+- \"passes\": MUST always be false (will be updated during implementation)
+
+Generate one test case for each user story or acceptance criterion.
+
+═══════════════════════════════════════════════════════════════════════════════
+FILE 3: Empty Progress File ($PROGRESS_PATH)
+═══════════════════════════════════════════════════════════════════════════════
+
+Create an EMPTY file with no content. Just create the file.
+
+═══════════════════════════════════════════════════════════════════════════════
+IMPORTANT CONSTRAINTS
+═══════════════════════════════════════════════════════════════════════════════
+
+- Do NOT create or modify any source code files (.ts, .js, .py, .tsx, .jsx, etc.)
+- Do NOT run any implementation commands
+- Do NOT start the Ralph loop or any other automation
+- Do NOT execute the Ralph Loop Command - just write it as documentation text
+- ONLY create the three documentation files listed above
+
+After writing all three files, output: <promise>SPEC COMPLETE</promise>"
 
     jq -n \
       --arg prompt "$FINALIZE_PROMPT" \
