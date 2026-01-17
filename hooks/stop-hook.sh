@@ -177,14 +177,6 @@ Document the suggested phases with their verification commands (as text).
 ## Definition of Done
 Checklist for when the feature is complete.
 
-## Ralph Loop Command
-This section contains the TEXT of a command that a developer would copy-paste later.
-Write it as a markdown code block. Example format:
-
-\`\`\`
-claude --max-iterations 30 --completion-promise \"COMPLETE\" \"Implement the spec at $SPEC_PATH following the phases defined. After each phase, run verification. If stuck for 20 iterations, document blockers and ask for help.\"
-\`\`\`
-
 ═══════════════════════════════════════════════════════════════════════════════
 FILE 2: Test Cases JSON ($JSON_PATH)
 ═══════════════════════════════════════════════════════════════════════════════
@@ -218,8 +210,6 @@ IMPORTANT CONSTRAINTS
 
 - Do NOT create or modify any source code files (.ts, .js, .py, .tsx, .jsx, etc.)
 - Do NOT run any implementation commands
-- Do NOT start the Ralph loop or any other automation
-- Do NOT execute the Ralph Loop Command - just write it as documentation text
 - ONLY create the three documentation files listed above
 
 After writing all three files, output: <promise>SPEC COMPLETE</promise>"
