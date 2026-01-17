@@ -140,39 +140,29 @@ FINALIZATION INSTRUCTIONS:
    - ESCAPE HATCH section: 'After 20 iterations without progress: Document what's blocking in the spec file under Implementation Notes, list approaches attempted, stop and ask for human guidance'
    - Use --max-iterations 30 --completion-promise \"COMPLETE\"
 
-4. Generate '$JSON_PATH' with this EXACT structure:
-   {
-     \"project\": \"[feature-slug from the spec]\",
-     \"branchName\": \"ralph/[feature-slug]\",
-     \"description\": \"[one-line feature description]\",
-     \"userStories\": [
-       {
-         \"id\": \"US-001\",
-         \"category\": \"[core|setup|integration|polish]\",
-         \"title\": \"[story title]\",
-         \"description\": \"[As a user, I want... so that...]\",
-         \"acceptanceCriteria\": [
-           \"[specific, verifiable criterion]\",
-           \"[another criterion]\"
-         ],
-         \"passes\": false,
-         \"notes\": \"\"
-       }
-     ]
-   }
+4. Generate '$JSON_PATH' as a JSON array where each element follows this EXACT structure (ALL fields are REQUIRED):
+   [
+     {
+       \"category\": \"functional\",
+       \"description\": \"[specific test case description]\",
+       \"steps\": [
+         \"[step 1 to verify]\",
+         \"[step 2 to verify]\",
+         \"[step 3 to verify]\"
+       ],
+       \"passes\": false
+     }
+   ]
 
-   CATEGORY VALUES:
-   - \"setup\": Initial setup, configuration, scaffolding
-   - \"core\": Core feature functionality
-   - \"integration\": Connecting with other systems/features
-   - \"polish\": UI refinements, error handling, edge cases
+   REQUIRED FIELDS (all must be present):
+   - \"category\": One of \"functional\", \"setup\", \"integration\", \"ui\", \"error-handling\"
+   - \"description\": Clear description of what this test case verifies
+   - \"steps\": Array of verification steps (strings)
+   - \"passes\": MUST always be false (Ralph will update during implementation)
 
-   IMPORTANT for acceptanceCriteria:
-   - Must be specific and verifiable (not \"works correctly\")
-   - Include test commands where applicable
-   - Map directly from user story acceptance criteria in the PRD
+   Generate one test case object for each user story or acceptance criterion from the PRD.
 
-5. Create an empty file at '$PROGRESS_PATH' (Ralph will append learnings during implementation)
+5. Create an EMPTY file at '$PROGRESS_PATH' - the file MUST be empty with no content (Ralph will populate it during implementation)
 
 6. After writing all three files, output: <promise>SPEC COMPLETE</promise>
 
