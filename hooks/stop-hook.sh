@@ -11,6 +11,8 @@ cleanup_on_error() {
     local exit_code=$?
     if [[ $exit_code -ne 0 ]]; then
         echo "Warning: Lisa stop hook error (code: $exit_code)" >&2
+        # Clean up state file to prevent error loops
+        rm -f ".claude/lisa.local.md" 2>/dev/null
     fi
     exit 0
 }
