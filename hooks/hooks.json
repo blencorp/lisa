@@ -1,4 +1,16 @@
 {
   "description": "Lisa specification interview plugin",
-  "hooks": {}
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf '\\e[?1004l'",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
 }
