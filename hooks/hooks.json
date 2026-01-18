@@ -1,3 +1,4 @@
 {
-  "description": "Lisa specification interview plugin"
+  "description": "Lisa specification interview plugin",
+  "hooks": {}
 }
