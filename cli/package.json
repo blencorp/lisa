@@ -1,0 +1,74 @@
+{
+  "name": "@blen/lisa",
+  "version": "0.1.0",
+  "description": "AI-Powered Planning Interview Tool - Generate PRDs through interactive AI interviews",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "lisa": "dist/cli/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blencorp/lisa",
+    "directory": "cli"
+  },
+  "bugs": {
+    "url": "https://github.com/blencorp/lisa/issues"
+  },
+  "homepage": "https://github.com/blencorp/lisa/tree/main/cli#readme",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "dev": "tsx src/cli/index.ts",
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build && npm run test && npm run lint"
+  },
+  "keywords": [
+    "cli",
+    "ai",
+    "planning",
+    "prd",
+    "interview",
+    "product-requirements",
+    "specification",
+    "claude",
+    "opencode",
+    "cursor",
+    "copilot",
+    "codex"
+  ],
+  "author": "Blen Corp",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.55.0",
+    "tsx": "^4.6.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "dependencies": {
+    "@inquirer/core": "^11.1.1",
+    "@inquirer/prompts": "^8.2.0",
+    "chalk": "^5.6.2",
+    "commander": "^11.1.0",
+    "ora": "^9.1.0",
+    "yaml": "^2.8.2"
+  }
+}
