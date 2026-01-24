@@ -22,9 +22,7 @@ jobs:
         id: release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          release-type: node
-          path: cli
-          include-component-in-tag: false
+          config-file: .github/release-please-config.json
 
   publish:
     needs: release-please
@@ -42,8 +40,8 @@ jobs:
           cache: 'npm'
           cache-dependency-path: cli/package-lock.json
       - run: npm ci
-      - run: npm test
       - run: npm run build
+      - run: npm test
       - run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
