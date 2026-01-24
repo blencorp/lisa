@@ -1,10 +1,28 @@
 <img src="lisa-banner.png" alt="Lisa Logo" width="1000" />
 
-# Lisa Plugin
+# Lisa
 
 **Lisa plans. Ralph does.**
 
-Interactive specification interview workflow for Claude Code that conducts in-depth feature interviews and generates comprehensive specs. Use with [ralph-loop](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/ralph-loop) for a complete planning-to-implementation workflow.
+Interactive specification interview workflow that conducts in-depth feature interviews and generates comprehensive specs. Available as both a Claude Code plugin and a standalone CLI that works with multiple AI providers.
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Installation](#installation)
+  - [Claude Code Plugin](#claude-code-plugin)
+  - [Standalone CLI](#standalone-cli)
+- [Quick Start](#quick-start)
+- [Plugin Commands](#plugin-commands)
+- [CLI Usage](#cli-usage)
+- [Output Files](#output-files)
+- [Interview Process](#interview-process)
+- [First Principles Mode](#first-principles-mode)
+- [Configuration](#configuration)
+- [Programmatic Usage](#programmatic-usage)
+- [Complete Workflow: Lisa + Ralph](#complete-workflow-lisa--ralph)
+- [Development](#development)
+- [License](#license)
 
 ## Overview
 
@@ -12,9 +30,15 @@ Based on the technique described by [@trq212](https://twitter.com/trq212):
 
 > My favorite way to use Claude Code to build large features is spec based. Start with a minimal spec or prompt and ask Claude to interview you using the AskUserQuestion tool about literally anything: technical implementation, UI & UX, concerns, tradeoffs, etc. Then make a new session to execute the spec.
 
-This plugin automates that workflow with explicit commands for starting, resuming, and cleaning up interviews.
+Lisa automates this workflow by:
+- Conducting structured interviews about your feature
+- Generating comprehensive PRDs in Markdown and JSON formats
+- Supporting resume of interrupted sessions
+- Optionally challenging assumptions with first-principles questioning
 
 ## Installation
+
+### Claude Code Plugin
 
 ```bash
 # Add the marketplace
@@ -24,7 +48,37 @@ This plugin automates that workflow with explicit commands for starting, resumin
 /plugin install lisa
 ```
 
-## Commands
+### Standalone CLI
+
+The CLI works with multiple AI providers. Run it directly with npx:
+
+```bash
+npx @blen/lisa "user authentication"
+```
+
+**Prerequisites:** At least one AI CLI tool must be installed:
+
+| Provider | CLI Command | Installation |
+|----------|-------------|--------------|
+| Claude Code | `claude` | [anthropic.com](https://anthropic.com) |
+| OpenCode | `opencode` | [opencode.dev](https://opencode.dev) |
+| Cursor | `cursor` or `agent` | [cursor.sh](https://cursor.sh) |
+| Codex | `codex` | [codex.dev](https://codex.dev) |
+| GitHub Copilot | `gh` with Copilot extension | [github.com/copilot](https://github.com/copilot) |
+
+## Quick Start
+
+**Plugin (Claude Code):**
+```bash
+/lisa:plan "user authentication"
+```
+
+**CLI:**
+```bash
+npx @blen/lisa "user authentication"
+```
+
+## Plugin Commands
 
 ### `/lisa:plan <FEATURE_NAME> [OPTIONS]`
 
@@ -96,9 +150,55 @@ Note: This does NOT delete completed specs in `docs/specs/`.
 
 Display help documentation about the Lisa workflow.
 
+## CLI Usage
+
+### Basic Usage
+
+```bash
+npx @blen/lisa "user authentication system"
+```
+
+### Command Reference
+
+```
+Usage: npx @blen/lisa [options] [feature]
+
+Arguments:
+  feature                          Feature description to plan
+
+Options:
+  -v, --version                    Display the current version
+  -r, --resume                     Resume a previously interrupted interview
+  -f, --first-principles           Begin with foundational questions
+  -c, --context <files...>         Reference documents to include
+  -p, --provider <name>            AI provider: claude, opencode, cursor, codex, copilot
+  -h, --help                       Display help
+```
+
+### Examples
+
+```bash
+# With AI provider selection
+npx @blen/lisa "feature description" --provider claude
+npx @blen/lisa "feature description" --provider opencode
+npx @blen/lisa "feature description" --provider cursor
+
+# With context files
+npx @blen/lisa "feature description" --context docs/spec.md
+npx @blen/lisa "feature description" --context docs/spec.md docs/api.md
+
+# First principles mode
+npx @blen/lisa "feature description" --first-principles
+
+# Resume an interrupted interview
+npx @blen/lisa --resume
+```
+
 ## Output Files
 
-Lisa generates three files when the interview is finalized:
+### Plugin Output
+
+The plugin generates three files when the interview is finalized:
 
 | File | Location | Description |
 |------|----------|-------------|
@@ -110,6 +210,15 @@ Lisa generates three files when the interview is finalized:
 - `docs/specs/user-authentication.md`
 - `docs/specs/user-authentication.json`
 - `docs/specs/user-authentication-progress.txt`
+
+### CLI Output
+
+The CLI generates PRD files in the `./lisa/` directory:
+
+| File | Description |
+|------|-------------|
+| `./lisa/{feature-slug}.md` | Markdown PRD with overview, user stories, and technical notes |
+| `./lisa/{feature-slug}.json` | JSON PRD for programmatic use |
 
 ### JSON Structure
 
@@ -144,53 +253,55 @@ The JSON output follows the [snarktank/ralph](https://github.com/snarktank/ralph
 - `integration` - Connecting with other systems
 - `polish` - UI refinements, error handling, edge cases
 
-## How It Works
+## Interview Process
 
-1. **Initialization**: Creates state file (`.claude/lisa-{slug}.md`) and draft spec (`.claude/lisa-draft.md`)
+### How It Works
+
+1. **Initialization**: Creates state files to track interview progress
 
 2. **Interview Loop**:
-   - Claude asks probing questions using `AskUserQuestion` tool
+   - AI asks probing questions using interactive prompts
    - Interview continues until you say "done" or "finalize"
    - Draft spec updated every 2-3 questions
    - Questions adapt based on your answers
-   - If interrupted, use `/lisa:resume` to continue
+   - If interrupted, use resume to continue
 
 3. **Completion Detection**: When you say "done", "finalize", "finished", "that's all", "complete", or "wrap up"
 
-4. **Finalization**: Generates all three output files (`.md`, `.json`, `-progress.txt`)
+4. **Finalization**: Generates all output files
 
-## Interview Coverage
+### Interview Coverage
 
 The interview systematically covers:
 
-### Scope Definition
+**Scope Definition**
 - What is explicitly OUT of scope?
 - MVP vs full vision boundaries
 - Related features to avoid touching
 
-### User Stories
+**User Stories**
 - Discrete stories completable in one coding session
-- **Verifiable** acceptance criteria (not vague)
+- Verifiable acceptance criteria (not vague)
   - Good: "API returns 200 for valid input", "Response < 200ms"
   - Bad: "Works correctly", "Is fast", "Handles errors"
 
-### Technical Implementation
+**Technical Implementation**
 - Data models and storage
 - API design (endpoints, methods, auth)
 - Integration with existing systems
 - Error handling and edge cases
 
-### User Experience
+**User Experience**
 - User flows and journeys
 - Edge cases and error states
 - Accessibility considerations
 
-### Trade-offs
+**Trade-offs**
 - Performance requirements
 - Security considerations
 - Scalability expectations
 
-### Implementation Phases
+**Implementation Phases**
 - 2-4 incremental phases
 - Verification command for each phase
 - Minimum viable first phase
@@ -199,8 +310,14 @@ The interview systematically covers:
 
 Use `--first-principles` to challenge assumptions before diving into details:
 
+**Plugin:**
 ```bash
 /lisa:plan "new feature" --first-principles
+```
+
+**CLI:**
+```bash
+npx @blen/lisa "new feature" --first-principles
 ```
 
 **Phase 1 - Challenge the Approach (3-5 questions):**
@@ -212,46 +329,91 @@ Use `--first-principles` to challenge assumptions before diving into details:
 
 **Phase 2 - Detailed Spec:** Only proceeds after validating the approach is sound.
 
-## Runtime Files
+## Configuration
 
-During an interview:
+### CLI Configuration
+
+The CLI stores configuration in `./lisa/config.yaml`:
+
+```yaml
+# Lisa CLI Configuration
+# Default AI provider (claude, opencode, cursor, codex, copilot)
+defaultProvider: claude
+
+# Output directory for generated PRDs
+outputDirectory: ./lisa
+```
+
+Interview progress is saved to `./lisa/state.yaml`, allowing you to:
+- Resume interrupted interviews with `npx @blen/lisa --resume`
+- Recover from network errors or crashes
+- Continue multi-session planning work
+
+State is automatically cleared after successful PRD generation.
+
+### Plugin Runtime Files
+
+During a plugin interview:
 
 | File | Purpose |
 |------|---------|
 | `.claude/lisa-{slug}.md` | Interview state (iteration count, paths, settings) |
 | `.claude/lisa-draft.md` | Running draft spec updated throughout |
 
-## Canceling an Interview
+## Programmatic Usage
 
-```bash
-# Remove the state file for the specific feature (slug is derived from feature name)
-rm .claude/lisa-*.md
+The CLI can also be used as a library:
 
-# Or use the cleanup command
-/lisa:cleanup
+```typescript
+import { runInterview, exploreCodebase, generateMarkdown } from '@blen/lisa';
+
+// Explore codebase
+const exploration = await exploreCodebase('/path/to/project');
+console.log(exploration.summary);
+
+// Generate PRD
+const prd = {
+  overview: 'Feature overview...',
+  userStories: [...],
+  technicalNotes: '...'
+};
+const markdown = generateMarkdown(prd, 'feature-slug');
 ```
+
+### Supported File Types for Context
+
+Lisa supports the following file types for `--context`:
+
+- **Markdown**: `.md`, `.markdown`
+- **Text**: `.txt`, `.text`
+- **Code**: `.ts`, `.tsx`, `.js`, `.jsx`, `.py`, `.rb`, `.go`, `.rs`, `.java`
+- **Config**: `.json`, `.yaml`, `.yml`, `.toml`, `.ini`, `.conf`
+- **Web**: `.html`, `.css`, `.scss`, `.less`
+- **Other**: `.xml`, `.sql`, `.graphql`, `.gql`, `.sh`, `.bash`, `.zsh`
 
 ## Complete Workflow: Lisa + Ralph
 
 ```
-┌─────────────────┐     ┌─────────────────┐
-│   Lisa Plans    │ ──> │   Ralph Does    │
-│                 │     │                 │
-│ /lisa:plan      │     │ /ralph-loop     │
-│ "my feature"    │     │                 │
-└─────────────────┘     └─────────────────┘
-        │                       │
++------------------+     +------------------+
+|   Lisa Plans     | --> |   Ralph Does     |
+|                  |     |                  |
+| /lisa:plan       |     | /ralph-loop      |
+| "my feature"     |     |                  |
++------------------+     +------------------+
+        |                       |
         v                       v
-  ┌───────────┐          ┌───────────┐
-  │ .md spec  │          │ Working   │
-  │ .json     │          │ Code      │
-  │ progress  │          │           │
-  └───────────┘          └───────────┘
+  +-----------+          +-----------+
+  | .md spec  |          | Working   |
+  | .json     |          | Code      |
+  | progress  |          |           |
+  +-----------+          +-----------+
 ```
 
 1. **Lisa plans** - Generate comprehensive spec:
    ```bash
    /lisa:plan "my feature"
+   # or
+   npx @blen/lisa "my feature"
    ```
 
 2. **Ralph does** - Implement iteratively:
@@ -261,7 +423,11 @@ rm .claude/lisa-*.md
 
 The generated spec includes a pre-formatted Ralph Loop command with phases and verification steps.
 
-## Local Development
+Use with [ralph-loop](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/ralph-loop) for a complete planning-to-implementation workflow.
+
+## Development
+
+### Plugin Development
 
 To develop and test the plugin locally:
 
@@ -273,20 +439,7 @@ cc --plugin-dir /path/to/lisa
 cc --plugin-dir ~/projects/lisa
 ```
 
-This allows you to:
-- Test changes immediately without reinstalling
-- Verify skill discovery and trigger phrases
-- Debug hook behavior and command execution
-
-### Development Workflow
-
-1. Make changes to plugin files (commands, hooks, scripts)
-2. Start a new Claude Code session with `--plugin-dir`
-3. Test the changes by running `/lisa:plan "test feature"`
-4. Iterate until satisfied
-5. Commit and push to publish updates
-
-## Plugin Structure
+### Plugin Structure
 
 ```
 lisa/
@@ -304,15 +457,124 @@ lisa/
 └── README.md
 ```
 
-## Version
+### CLI Development
 
-- **Version:** 1.1.0 (with resume and cleanup commands)
-- **Author:** BLEN Engineering Team
+#### Prerequisites
+
+- Node.js >= 18.0.0
+- npm
+
+#### Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/blencorp/lisa.git
+cd lisa/cli
+
+# Install dependencies
+npm install
+```
+
+#### Running Locally
+
+During development, use `npm run dev` to run the CLI directly without building:
+
+```bash
+# Run CLI with a feature description
+npm run dev "user authentication system"
+
+# With options
+npm run dev "feature name" -- --provider claude --first-principles
+
+# Resume an interrupted session
+npm run dev -- --resume
+
+# Show help
+npm run dev -- --help
+```
+
+Note: Use `--` before CLI flags to pass them through npm to the script.
+
+#### Building
+
+```bash
+# Compile TypeScript to JavaScript
+npm run build
+
+# Output is written to ./dist/
+```
+
+#### Type Checking
+
+```bash
+npm run typecheck
+```
+
+#### Linting
+
+```bash
+# Check for lint errors
+npm run lint
+
+# Auto-fix lint errors
+npm run lint:fix
+```
+
+### Testing
+
+The CLI uses [Vitest](https://vitest.dev/) as its test framework.
+
+```bash
+# Run all tests once
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run a specific test file
+npm test src/core/prd.test.ts
+
+# Run tests with coverage
+npm test -- --coverage
+```
+
+#### Test Structure
+
+| Type | Location | Description |
+|------|----------|-------------|
+| Unit | `src/**/*.test.ts` | Tests for individual modules |
+| Integration | `src/integration/` | Tests for interview flow with mocked providers |
+| E2E | `src/e2e/` | Tests against real AI CLI providers |
+| Snapshot | `src/core/prd.snapshot.test.ts` | Validates PRD output formats |
+
+### CLI Project Structure
+
+```
+cli/
+├── src/
+│   ├── index.ts              # Public API exports
+│   ├── cli/                  # CLI interface (Commander.js, Inquirer)
+│   ├── core/                 # Core logic (orchestrator, state, PRD generation)
+│   ├── providers/            # AI provider implementations
+│   └── utils/                # Utility functions
+├── dist/                     # Compiled output
+├── package.json
+├── tsconfig.json
+├── vitest.config.ts
+└── README.md
+```
+
+## License
+
+MIT
 
 ---
 
+**Version:** 1.2.0 (Plugin) | 0.1.0 (CLI)
+**Author:** BLEN Engineering Team
+
 Built with love by [BLEN, Inc](https://www.blencorp.com).
 
-## About BLEN
+### About BLEN
 
 BLEN, Inc is a digital services company that provides Emerging Technology (ML/AI, RPA), Digital Modernization (Legacy to Cloud), and Human-Centered Web/Mobile Design and Development.
