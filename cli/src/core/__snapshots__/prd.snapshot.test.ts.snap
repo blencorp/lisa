@@ -1,0 +1,767 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PRD Snapshot Tests > JSON Output Snapshots > JSON stringified output > matches snapshot for complex JSON stringified output 1`] = `
+"{
+  "$schema": "https://lisa-cli.dev/schemas/prd-v1.json",
+  "version": "1.0.0",
+  "metadata": {
+    "slug": "user-management-system",
+    "title": "User Management System",
+    "generatedAt": "2026-01-15T10:30:00.000Z",
+    "generator": "lisa-cli"
+  },
+  "overview": "This feature implements a comprehensive user management system including authentication, authorization, and profile management.\\n\\nKey capabilities include:\\n- Secure password-based authentication\\n- Role-based access control (RBAC)\\n- User profile management\\n- Session management with refresh tokens",
+  "userStories": [
+    {
+      "id": 1,
+      "title": "User Registration",
+      "description": "As a new user, I want to create an account so that I can access the application",
+      "acceptanceCriteria": [
+        {
+          "id": 1,
+          "text": "User can enter name, email, and password",
+          "completed": false
+        },
+        {
+          "id": 2,
+          "text": "Email validation ensures proper format",
+          "completed": false
+        },
+        {
+          "id": 3,
+          "text": "Password requirements enforced (min 8 chars, 1 number, 1 special char)",
+          "completed": false
+        },
+        {
+          "id": 4,
+          "text": "Duplicate email detection prevents re-registration",
+          "completed": false
+        },
+        {
+          "id": 5,
+          "text": "Welcome email sent upon successful registration",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "User Login",
+      "description": "As a registered user, I want to log in securely so that I can access my data",
+      "acceptanceCriteria": [
+        {
+          "id": 1,
+          "text": "User can authenticate with email and password",
+          "completed": false
+        },
+        {
+          "id": 2,
+          "text": "Failed attempts are rate-limited",
+          "completed": false
+        },
+        {
+          "id": 3,
+          "text": "JWT tokens issued upon successful login",
+          "completed": false
+        },
+        {
+          "id": 4,
+          "text": "Refresh token enables session extension",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Password Reset",
+      "description": "As a user who forgot my password, I want to reset it so that I can regain access",
+      "acceptanceCriteria": [
+        {
+          "id": 1,
+          "text": "User can request password reset via email",
+          "completed": false
+        },
+        {
+          "id": 2,
+          "text": "Reset link expires after 1 hour",
+          "completed": false
+        },
+        {
+          "id": 3,
+          "text": "New password must meet security requirements",
+          "completed": false
+        },
+        {
+          "id": 4,
+          "text": "Old sessions invalidated after password change",
+          "completed": false
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Profile Management",
+      "description": "As a user, I want to manage my profile information so that I can keep it up to date",
+      "acceptanceCriteria": [
+        {
+          "id": 1,
+          "text": "User can view current profile information",
+          "completed": false
+        },
+        {
+          "id": 2,
+          "text": "User can update name and email",
+          "completed": false
+        },
+        {
+          "id": 3,
+          "text": "Email changes require verification",
+          "completed": false
+        },
+        {
+          "id": 4,
+          "text": "Profile picture upload supported",
+          "completed": false
+        }
+      ]
+    }
+  ],
+  "technicalNotes": "## Authentication Architecture\\n\\n### Token Strategy\\n- Access tokens: JWT with 15-minute expiry\\n- Refresh tokens: Opaque tokens with 7-day expiry\\n- Tokens stored in HTTP-only cookies for XSS protection\\n\\n### Security Considerations\\n- Passwords hashed with bcrypt (cost factor 12)\\n- Rate limiting: 5 failed attempts triggers 15-minute lockout\\n- CSRF protection via double-submit cookie pattern\\n\\n### Database Schema\\n- Users table with email, password_hash, created_at, updated_at\\n- Sessions table for refresh token management\\n- Password reset tokens with expiration tracking\\n\\n### API Endpoints\\n\`\`\`\\nPOST /api/auth/register\\nPOST /api/auth/login\\nPOST /api/auth/logout\\nPOST /api/auth/refresh\\nPOST /api/auth/forgot-password\\nPOST /api/auth/reset-password\\nGET  /api/users/me\\nPUT  /api/users/me\\n\`\`\`"
+}"
+`;
+
+exports[`PRD Snapshot Tests > JSON Output Snapshots > JSON stringified output > matches snapshot for pretty-printed JSON output 1`] = `
+"{
+  "$schema": "https://lisa-cli.dev/schemas/prd-v1.json",
+  "version": "1.0.0",
+  "metadata": {
+    "slug": "user-auth",
+    "title": "User Auth",
+    "generatedAt": "2026-01-15T10:30:00.000Z",
+    "generator": "lisa-cli"
+  },
+  "overview": "This feature implements basic user authentication for the application.",
+  "userStories": [
+    {
+      "id": 1,
+      "title": "User Login",
+      "description": "As a user, I want to log in to my account so that I can access my data",
+      "acceptanceCriteria": [
+        {
+          "id": 1,
+          "text": "User can enter email and password",
+          "completed": false
+        },
+        {
+          "id": 2,
+          "text": "Invalid credentials show error message",
+          "completed": false
+        }
+      ]
+    }
+  ],
+  "technicalNotes": "Use bcrypt for password hashing. Implement rate limiting on login endpoint."
+}"
+`;
+
+exports[`PRD Snapshot Tests > JSON Output Snapshots > generateJSON > matches snapshot for JSON structure with nested acceptance criteria 1`] = `
+[
+  {
+    "criteriaCount": 5,
+    "id": 1,
+    "title": "User Registration",
+  },
+  {
+    "criteriaCount": 4,
+    "id": 2,
+    "title": "User Login",
+  },
+  {
+    "criteriaCount": 4,
+    "id": 3,
+    "title": "Password Reset",
+  },
+  {
+    "criteriaCount": 4,
+    "id": 4,
+    "title": "Profile Management",
+  },
+]
+`;
+
+exports[`PRD Snapshot Tests > JSON Output Snapshots > generateJSON > matches snapshot for PRD with special characters 1`] = `
+{
+  "$schema": "https://lisa-cli.dev/schemas/prd-v1.json",
+  "metadata": {
+    "generatedAt": "2026-01-15T10:30:00.000Z",
+    "generator": "lisa-cli",
+    "slug": "special-chars",
+    "title": "Special Chars",
+  },
+  "overview": "Feature with "quotes", <tags>, & ampersands, and \`code\`.",
+  "technicalNotes": "Use DOMPurify for sanitization. Escape HTML entities: &lt; &gt; &amp; &quot;",
+  "userStories": [
+    {
+      "acceptanceCriteria": [
+        {
+          "completed": false,
+          "id": 1,
+          "text": "Input sanitized for <script> tags",
+        },
+        {
+          "completed": false,
+          "id": 2,
+          "text": "Quotes "single" and 'double' handled correctly",
+        },
+        {
+          "completed": false,
+          "id": 3,
+          "text": "Ampersands & other HTML entities escaped",
+        },
+        {
+          "completed": false,
+          "id": 4,
+          "text": "Backticks \`code\` rendered properly",
+        },
+      ],
+      "description": "As a user, I want to input text with special chars like <script>, "quotes", and & symbols",
+      "id": 1,
+      "title": "Handle Special Characters",
+    },
+  ],
+  "version": "1.0.0",
+}
+`;
+
+exports[`PRD Snapshot Tests > JSON Output Snapshots > generateJSON > matches snapshot for complex PRD with multiple stories 1`] = `
+{
+  "$schema": "https://lisa-cli.dev/schemas/prd-v1.json",
+  "metadata": {
+    "generatedAt": "2026-01-15T10:30:00.000Z",
+    "generator": "lisa-cli",
+    "slug": "user-management-system",
+    "title": "User Management System",
+  },
+  "overview": "This feature implements a comprehensive user management system including authentication, authorization, and profile management.
+
+Key capabilities include:
+- Secure password-based authentication
+- Role-based access control (RBAC)
+- User profile management
+- Session management with refresh tokens",
+  "technicalNotes": "## Authentication Architecture
+
+### Token Strategy
+- Access tokens: JWT with 15-minute expiry
+- Refresh tokens: Opaque tokens with 7-day expiry
+- Tokens stored in HTTP-only cookies for XSS protection
+
+### Security Considerations
+- Passwords hashed with bcrypt (cost factor 12)
+- Rate limiting: 5 failed attempts triggers 15-minute lockout
+- CSRF protection via double-submit cookie pattern
+
+### Database Schema
+- Users table with email, password_hash, created_at, updated_at
+- Sessions table for refresh token management
+- Password reset tokens with expiration tracking
+
+### API Endpoints
+\`\`\`
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/logout
+POST /api/auth/refresh
+POST /api/auth/forgot-password
+POST /api/auth/reset-password
+GET  /api/users/me
+PUT  /api/users/me
+\`\`\`",
+  "userStories": [
+    {
+      "acceptanceCriteria": [
+        {
+          "completed": false,
+          "id": 1,
+          "text": "User can enter name, email, and password",
+        },
+        {
+          "completed": false,
+          "id": 2,
+          "text": "Email validation ensures proper format",
+        },
+        {
+          "completed": false,
+          "id": 3,
+          "text": "Password requirements enforced (min 8 chars, 1 number, 1 special char)",
+        },
+        {
+          "completed": false,
+          "id": 4,
+          "text": "Duplicate email detection prevents re-registration",
+        },
+        {
+          "completed": false,
+          "id": 5,
+          "text": "Welcome email sent upon successful registration",
+        },
+      ],
+      "description": "As a new user, I want to create an account so that I can access the application",
+      "id": 1,
+      "title": "User Registration",
+    },
+    {
+      "acceptanceCriteria": [
+        {
+          "completed": false,
+          "id": 1,
+          "text": "User can authenticate with email and password",
+        },
+        {
+          "completed": false,
+          "id": 2,
+          "text": "Failed attempts are rate-limited",
+        },
+        {
+          "completed": false,
+          "id": 3,
+          "text": "JWT tokens issued upon successful login",
+        },
+        {
+          "completed": false,
+          "id": 4,
+          "text": "Refresh token enables session extension",
+        },
+      ],
+      "description": "As a registered user, I want to log in securely so that I can access my data",
+      "id": 2,
+      "title": "User Login",
+    },
+    {
+      "acceptanceCriteria": [
+        {
+          "completed": false,
+          "id": 1,
+          "text": "User can request password reset via email",
+        },
+        {
+          "completed": false,
+          "id": 2,
+          "text": "Reset link expires after 1 hour",
+        },
+        {
+          "completed": false,
+          "id": 3,
+          "text": "New password must meet security requirements",
+        },
+        {
+          "completed": false,
+          "id": 4,
+          "text": "Old sessions invalidated after password change",
+        },
+      ],
+      "description": "As a user who forgot my password, I want to reset it so that I can regain access",
+      "id": 3,
+      "title": "Password Reset",
+    },
+    {
+      "acceptanceCriteria": [
+        {
+          "completed": false,
+          "id": 1,
+          "text": "User can view current profile information",
+        },
+        {
+          "completed": false,
+          "id": 2,
+          "text": "User can update name and email",
+        },
+        {
+          "completed": false,
+          "id": 3,
+          "text": "Email changes require verification",
+        },
+        {
+          "completed": false,
+          "id": 4,
+          "text": "Profile picture upload supported",
+        },
+      ],
+      "description": "As a user, I want to manage my profile information so that I can keep it up to date",
+      "id": 4,
+      "title": "Profile Management",
+    },
+  ],
+  "version": "1.0.0",
+}
+`;
+
+exports[`PRD Snapshot Tests > JSON Output Snapshots > generateJSON > matches snapshot for minimal PRD 1`] = `
+{
+  "$schema": "https://lisa-cli.dev/schemas/prd-v1.json",
+  "metadata": {
+    "generatedAt": "2026-01-15T10:30:00.000Z",
+    "generator": "lisa-cli",
+    "slug": "minimal-feature",
+    "title": "Minimal Feature",
+  },
+  "overview": "A simple feature.",
+  "technicalNotes": "",
+  "userStories": [
+    {
+      "acceptanceCriteria": [],
+      "description": "As a user, I want to do something",
+      "id": 1,
+      "title": "Basic Task",
+    },
+  ],
+  "version": "1.0.0",
+}
+`;
+
+exports[`PRD Snapshot Tests > JSON Output Snapshots > generateJSON > matches snapshot for simple PRD 1`] = `
+{
+  "$schema": "https://lisa-cli.dev/schemas/prd-v1.json",
+  "metadata": {
+    "generatedAt": "2026-01-15T10:30:00.000Z",
+    "generator": "lisa-cli",
+    "slug": "user-auth",
+    "title": "User Auth",
+  },
+  "overview": "This feature implements basic user authentication for the application.",
+  "technicalNotes": "Use bcrypt for password hashing. Implement rate limiting on login endpoint.",
+  "userStories": [
+    {
+      "acceptanceCriteria": [
+        {
+          "completed": false,
+          "id": 1,
+          "text": "User can enter email and password",
+        },
+        {
+          "completed": false,
+          "id": 2,
+          "text": "Invalid credentials show error message",
+        },
+      ],
+      "description": "As a user, I want to log in to my account so that I can access my data",
+      "id": 1,
+      "title": "User Login",
+    },
+  ],
+  "version": "1.0.0",
+}
+`;
+
+exports[`PRD Snapshot Tests > JSON Output Snapshots > generateJSON > matches snapshot with custom feature name 1`] = `
+{
+  "$schema": "https://lisa-cli.dev/schemas/prd-v1.json",
+  "metadata": {
+    "generatedAt": "2026-01-15T10:30:00.000Z",
+    "generator": "lisa-cli",
+    "slug": "user-auth",
+    "title": "User Authentication System",
+  },
+  "overview": "This feature implements basic user authentication for the application.",
+  "technicalNotes": "Use bcrypt for password hashing. Implement rate limiting on login endpoint.",
+  "userStories": [
+    {
+      "acceptanceCriteria": [
+        {
+          "completed": false,
+          "id": 1,
+          "text": "User can enter email and password",
+        },
+        {
+          "completed": false,
+          "id": 2,
+          "text": "Invalid credentials show error message",
+        },
+      ],
+      "description": "As a user, I want to log in to my account so that I can access my data",
+      "id": 1,
+      "title": "User Login",
+    },
+  ],
+  "version": "1.0.0",
+}
+`;
+
+exports[`PRD Snapshot Tests > Markdown Output Snapshots > formatUserStory > matches snapshot for simple user story 1`] = `
+"### 1. User Login
+
+As a user, I want to log in to my account so that I can access my data
+
+**Acceptance Criteria:**
+
+- [ ] User can enter email and password
+- [ ] Invalid credentials show error message"
+`;
+
+exports[`PRD Snapshot Tests > Markdown Output Snapshots > formatUserStory > matches snapshot for user story with many acceptance criteria 1`] = `
+"### 1. User Registration
+
+As a new user, I want to create an account so that I can access the application
+
+**Acceptance Criteria:**
+
+- [ ] User can enter name, email, and password
+- [ ] Email validation ensures proper format
+- [ ] Password requirements enforced (min 8 chars, 1 number, 1 special char)
+- [ ] Duplicate email detection prevents re-registration
+- [ ] Welcome email sent upon successful registration"
+`;
+
+exports[`PRD Snapshot Tests > Markdown Output Snapshots > formatUserStory > matches snapshot for user story with no acceptance criteria 1`] = `
+"### 1. Basic Task
+
+As a user, I want to do something
+"
+`;
+
+exports[`PRD Snapshot Tests > Markdown Output Snapshots > formatUserStory > matches snapshot for user story with special characters 1`] = `
+"### 1. Handle Special Characters
+
+As a user, I want to input text with special chars like <script>, "quotes", and & symbols
+
+**Acceptance Criteria:**
+
+- [ ] Input sanitized for <script> tags
+- [ ] Quotes "single" and 'double' handled correctly
+- [ ] Ampersands & other HTML entities escaped
+- [ ] Backticks \`code\` rendered properly"
+`;
+
+exports[`PRD Snapshot Tests > Markdown Output Snapshots > formatUserStory > matches snapshot with different index numbers 1`] = `
+"### 3. Third Story
+
+This is the third story
+
+**Acceptance Criteria:**
+
+- [ ] Criterion A
+- [ ] Criterion B"
+`;
+
+exports[`PRD Snapshot Tests > Markdown Output Snapshots > generateMarkdown > matches snapshot for PRD with special characters 1`] = `
+"# Special Chars
+
+> Generated by Lisa CLI on 2026-01-15
+
+## Overview
+
+Feature with "quotes", <tags>, & ampersands, and \`code\`.
+
+## User Stories
+
+### 1. Handle Special Characters
+
+As a user, I want to input text with special chars like <script>, "quotes", and & symbols
+
+**Acceptance Criteria:**
+
+- [ ] Input sanitized for <script> tags
+- [ ] Quotes "single" and 'double' handled correctly
+- [ ] Ampersands & other HTML entities escaped
+- [ ] Backticks \`code\` rendered properly
+
+## Technical Notes
+
+Use DOMPurify for sanitization. Escape HTML entities: &lt; &gt; &amp; &quot;
+"
+`;
+
+exports[`PRD Snapshot Tests > Markdown Output Snapshots > generateMarkdown > matches snapshot for complex PRD with multiple stories 1`] = `
+"# User Management System
+
+> Generated by Lisa CLI on 2026-01-15
+
+## Overview
+
+This feature implements a comprehensive user management system including authentication, authorization, and profile management.
+
+Key capabilities include:
+- Secure password-based authentication
+- Role-based access control (RBAC)
+- User profile management
+- Session management with refresh tokens
+
+## User Stories
+
+### 1. User Registration
+
+As a new user, I want to create an account so that I can access the application
+
+**Acceptance Criteria:**
+
+- [ ] User can enter name, email, and password
+- [ ] Email validation ensures proper format
+- [ ] Password requirements enforced (min 8 chars, 1 number, 1 special char)
+- [ ] Duplicate email detection prevents re-registration
+- [ ] Welcome email sent upon successful registration
+
+### 2. User Login
+
+As a registered user, I want to log in securely so that I can access my data
+
+**Acceptance Criteria:**
+
+- [ ] User can authenticate with email and password
+- [ ] Failed attempts are rate-limited
+- [ ] JWT tokens issued upon successful login
+- [ ] Refresh token enables session extension
+
+### 3. Password Reset
+
+As a user who forgot my password, I want to reset it so that I can regain access
+
+**Acceptance Criteria:**
+
+- [ ] User can request password reset via email
+- [ ] Reset link expires after 1 hour
+- [ ] New password must meet security requirements
+- [ ] Old sessions invalidated after password change
+
+### 4. Profile Management
+
+As a user, I want to manage my profile information so that I can keep it up to date
+
+**Acceptance Criteria:**
+
+- [ ] User can view current profile information
+- [ ] User can update name and email
+- [ ] Email changes require verification
+- [ ] Profile picture upload supported
+
+## Technical Notes
+
+## Authentication Architecture
+
+### Token Strategy
+- Access tokens: JWT with 15-minute expiry
+- Refresh tokens: Opaque tokens with 7-day expiry
+- Tokens stored in HTTP-only cookies for XSS protection
+
+### Security Considerations
+- Passwords hashed with bcrypt (cost factor 12)
+- Rate limiting: 5 failed attempts triggers 15-minute lockout
+- CSRF protection via double-submit cookie pattern
+
+### Database Schema
+- Users table with email, password_hash, created_at, updated_at
+- Sessions table for refresh token management
+- Password reset tokens with expiration tracking
+
+### API Endpoints
+\`\`\`
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/logout
+POST /api/auth/refresh
+POST /api/auth/forgot-password
+POST /api/auth/reset-password
+GET  /api/users/me
+PUT  /api/users/me
+\`\`\`
+"
+`;
+
+exports[`PRD Snapshot Tests > Markdown Output Snapshots > generateMarkdown > matches snapshot for minimal PRD 1`] = `
+"# Minimal Feature
+
+> Generated by Lisa CLI on 2026-01-15
+
+## Overview
+
+A simple feature.
+
+## User Stories
+
+### 1. Basic Task
+
+As a user, I want to do something
+
+
+## Technical Notes
+
+
+"
+`;
+
+exports[`PRD Snapshot Tests > Markdown Output Snapshots > generateMarkdown > matches snapshot for simple PRD 1`] = `
+"# User Auth
+
+> Generated by Lisa CLI on 2026-01-15
+
+## Overview
+
+This feature implements basic user authentication for the application.
+
+## User Stories
+
+### 1. User Login
+
+As a user, I want to log in to my account so that I can access my data
+
+**Acceptance Criteria:**
+
+- [ ] User can enter email and password
+- [ ] Invalid credentials show error message
+
+## Technical Notes
+
+Use bcrypt for password hashing. Implement rate limiting on login endpoint.
+"
+`;
+
+exports[`PRD Snapshot Tests > Markdown Output Snapshots > generateMarkdown > matches snapshot for title generated from hyphenated slug 1`] = `
+"# My Awesome Feature V2
+
+> Generated by Lisa CLI on 2026-01-15
+
+## Overview
+
+This feature implements basic user authentication for the application.
+
+## User Stories
+
+### 1. User Login
+
+As a user, I want to log in to my account so that I can access my data
+
+**Acceptance Criteria:**
+
+- [ ] User can enter email and password
+- [ ] Invalid credentials show error message
+
+## Technical Notes
+
+Use bcrypt for password hashing. Implement rate limiting on login endpoint.
+"
+`;
+
+exports[`PRD Snapshot Tests > Markdown Output Snapshots > generateMarkdown > matches snapshot with custom feature name 1`] = `
+"# User Authentication System
+
+> Generated by Lisa CLI on 2026-01-15
+
+## Overview
+
+This feature implements basic user authentication for the application.
+
+## User Stories
+
+### 1. User Login
+
+As a user, I want to log in to my account so that I can access my data
+
+**Acceptance Criteria:**
+
+- [ ] User can enter email and password
+- [ ] Invalid credentials show error message
+
+## Technical Notes
+
+Use bcrypt for password hashing. Implement rate limiting on login endpoint.
+"
+`;
